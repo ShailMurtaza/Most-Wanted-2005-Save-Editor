@@ -14,6 +14,7 @@ void updata_hash();
 
 int main()
 {
+	printf("CREATED BY SHAIL :) \n");
 	char Uname[9] = "";
 	char *path = calloc(100, sizeof(char));
 	char new_path[100] = "";
