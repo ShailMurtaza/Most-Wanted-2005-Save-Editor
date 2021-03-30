@@ -14,12 +14,17 @@ void updata_hash();
 
 int main()
 {
-	printf("CREATED BY SHAIL :) \n");
+	system("color 0a");
+	printf(" +------------------+\n");
+	printf(" | CREATED BY SHAIL |\n");
+	printf(" +------------------+\n");
+
+
 	char Uname[9] = "";
 	char *path = calloc(100, sizeof(char));
 	char new_path[100] = "";
 
-	printf("Enter path of file of your Most Wanted saved game: ");
+	printf(" Enter path of file of your Most Wanted saved game: ");
 	gets(path);
 
 	int x;
@@ -37,13 +42,13 @@ int main()
 	{
 		fseek(fp, p_name, SEEK_SET);
 		fgets(Uname, 8, fp);
-		printf("\nName                       : %s\n", Uname);
+		printf("\n Name                       : %s\n", Uname);
 		
 		fseek(fp, p_money, SEEK_SET); // Seeking where money is stored
-		printf("Current Money              : %d\n", getw(fp));
+		printf(" Current Money              : %d\n", getw(fp));
 	
 		fseek(fp, p_bounty, SEEK_SET); // Seeking where bounty is stored
-		printf("Current Bounty (1st CAR)   : %d\n\n", getw(fp));
+		printf(" Current Bounty (1st CAR)   : %d\n\n", getw(fp));
 	
 		get_modified();
 		update_data();
@@ -52,9 +57,10 @@ int main()
 		fclose(fp);
 	}
 	else {
-		perror("\nERROR");
+		system("color 0c");
+		perror("\n ERROR");
 	}
-	printf("\nDONE .... ");
+	printf("\n DONE .... ");
 	getchar();
 	getchar();
 	return 0;
@@ -63,9 +69,9 @@ int main()
 
 void get_modified()
 {
-	printf("ENTER Modified Money  : ");
+	printf(" ENTER Modified Money  : ");
 	scanf("%d", &new_money);
-	printf("ENTER Modified Bounty : ");
+	printf(" ENTER Modified Bounty : ");
 	scanf("%d", &new_bounty);
 	
 	if(new_money < 0)
@@ -73,7 +79,7 @@ void get_modified()
 	if(new_bounty < 0)
 		new_bounty = 0;
 	
-	printf("\n\nYour Money  = %d\nYour Bounty = %d\n\n", new_money, new_bounty);
+	printf("\n\n Your Money  = %d\n Your Bounty = %d\n\n", new_money, new_bounty);
 }
 
 
