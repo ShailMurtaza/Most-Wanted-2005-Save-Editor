@@ -11,6 +11,7 @@ int new_money, new_bounty, i;
 int p_money = 16441, p_bounty = 58109, p_name = 23089; // Positions of specific variable in file
 
 char *get_file();
+char *get_Uname(char **dirs, size_t dirs_len);
 void get_modified();
 void update_data();
 void updata_hash();
@@ -67,7 +68,7 @@ char *get_file()
 	char *mw_path = (char *) calloc(1, 1); // Empty string
 	char **dirs = NULL;
 	size_t dirs_len;
-	char *Uname;
+	char *Uname = NULL;
 
 	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
 	if (cmd) {
@@ -82,11 +83,32 @@ char *get_file()
 		pclose(cmd);
 		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output. World is going to destroy because now mw_path has 1 extra unused byte allocated
 		dirs = listdir(mw_path, &dirs_len);
+		Uname = get_Uname(dirs, dirs_len);
 		if (dirs) {
 			// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
 		}
 	}
 	return Uname;
+}
+
+
+char *get_Uname(char **dirs, const size_t dirs_len)
+{
+	unsigned short i;
+	char *Uname;
+	puts("------Select USER------");
+	for(i=1;i<=dirs_len;i++) {
+		printf(" %d. %s\n", i, dirs[i-1]);
+	}
+	printf(" ENTER: ");
+	scanf("%hu", &i);
+	if (i <= dirs_len && i > 0) {
+		Uname = dirs[i-1];
+		return Uname;
+	}
+	else {
+		error("\n INVALID SELECTION");
+	}
 }
 
 
