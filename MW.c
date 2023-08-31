@@ -17,10 +17,10 @@ int listdir(const char *PATH);
 
 int main()
 {
-	system("color 0a");
-	printf(" +------------------+\n");
-	printf(" | CREATED BY SHAIL |\n");
-	printf(" +------------------+\n");
+	// system("color 0a");
+	// printf(" +------------------+\n");
+	// printf(" | CREATED BY SHAIL |\n");
+	// printf(" +------------------+\n");
 
 
 	char Uname[30];
@@ -72,8 +72,6 @@ int get_file(char *Uname)
 	}
 	return 0;
 }
-
-
 
 
 void get_modified()
