@@ -1,15 +1,18 @@
 #include "md5.h"
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 FILE* fp;
 int new_money, new_bounty, i;
-int p_money = 16441, p_bounty = 58109, p_name = 23089;
+int p_money = 16441, p_bounty = 58109, p_name = 23089; // Positions of specific variable in file
 
-
+int get_file();
 void get_modified();
 void update_data();
 void updata_hash();
+int listdir(const char *PATH);
 
 
 int main()
@@ -20,51 +23,57 @@ int main()
 	printf(" +------------------+\n");
 
 
-	char Uname[9] = "";
-	char *path = calloc(100, sizeof(char));
+	char Uname[30];
+	if (get_file(Uname)) {
+		exit(0);
+		if(fp)
+		{
+			fseek(fp, p_name, SEEK_SET);
+			fgets(Uname, sizeof(Uname)-1, fp);
+			printf("\n Name                       : %s\n", Uname);
+			
+			fseek(fp, p_money, SEEK_SET); // Seeking where money is stored
+			printf(" Current Money              : %d\n", getw(fp));
+		
+			fseek(fp, p_bounty, SEEK_SET); // Seeking where bounty is stored
+			printf(" Current Bounty (1st CAR)   : %d\n\n", getw(fp));
+		
+			get_modified();
+			update_data();
+			updata_hash();
+		
+			fclose(fp);
+		}
+		else {
+			system("color 0c");
+			perror("\n ERROR");
+		}
+		printf("\n DONE .... ");
+		getchar();
+		getchar();
+		return 0;
+	}
+	return 1;
+}
+
+
+int get_file(char *Uname)
+{
+	char mw_path[100];
+	char path[100];
 	char new_path[100] = "";
 
-	printf(" Enter path of file of your Most Wanted saved game: ");
-	gets(path);
-
-	int x;
-	for(i=0;i<strlen(path);i++)
-	{
-		if(path[i] != '\"')
-		{
-			new_path[x] = path[i];
-			x++;
-		}
+	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
+	fgets(mw_path, sizeof(mw_path)-1, cmd);
+	mw_path[strlen(mw_path)-1] = '\0';
+	if (listdir(mw_path)) {
+		// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
+		return 1;
 	}
-	free(path);
-	fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
-	if(fp)
-	{
-		fseek(fp, p_name, SEEK_SET);
-		fgets(Uname, 8, fp);
-		printf("\n Name                       : %s\n", Uname);
-		
-		fseek(fp, p_money, SEEK_SET); // Seeking where money is stored
-		printf(" Current Money              : %d\n", getw(fp));
-	
-		fseek(fp, p_bounty, SEEK_SET); // Seeking where bounty is stored
-		printf(" Current Bounty (1st CAR)   : %d\n\n", getw(fp));
-	
-		get_modified();
-		update_data();
-		updata_hash();
-	
-		fclose(fp);
-	}
-	else {
-		system("color 0c");
-		perror("\n ERROR");
-	}
-	printf("\n DONE .... ");
-	getchar();
-	getchar();
 	return 0;
 }
+
+
 
 
 void get_modified()
@@ -114,4 +123,24 @@ void updata_hash()
 			fputc(u.b[k], fp);
 		}
 	}
+}
+
+
+int listdir(const char *PATH)
+{
+	short dir_num = 0;
+	struct dirent *entry;
+	DIR *dp;
+
+	dp = opendir(PATH);
+	if (dp)
+	{
+		while(entry = readdir(dp)) {
+			if (dir_num++ > 1)
+				puts(entry->d_name);
+		}
+		closedir(dp);
+		return 1;
+	}
+	return 0;
 }
