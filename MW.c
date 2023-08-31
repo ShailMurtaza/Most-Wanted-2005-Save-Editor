@@ -61,16 +61,22 @@ int main()
 
 int get_file(char *Uname)
 {
-	char mw_path[100];
-	char path[100];
-	char new_path[100] = "";
+	char temp[4];
+	char *mw_path = (char *) calloc(1, 1);
 
 	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
-	fgets(mw_path, sizeof(mw_path)-1, cmd);
-	mw_path[strlen(mw_path)-1] = '\0';
-	if (listdir(mw_path)) {
-		// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
-		return 1;
+	if (cmd) {
+		while(fgets(temp, sizeof(temp), cmd)) {
+			mw_path = strcat(mw_path, temp);
+		}
+		pclose(cmd);
+		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output
+		puts(mw_path);
+		if (listdir(mw_path)) {
+			// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
+			return 1;
+		}
+		return 0;
 	}
 	return 0;
 }
