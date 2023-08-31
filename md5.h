@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
- 
+
+#ifndef MD5_H_
+#define MD5_H_
+
+
 typedef union uwb {
     unsigned w;
     unsigned char b[4];
@@ -124,3 +128,4 @@ unsigned *md5( const char *msg, int mlen)
     return h;
 }
 
+#endif

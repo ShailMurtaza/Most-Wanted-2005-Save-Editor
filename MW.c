@@ -1,8 +1,10 @@
-#include "md5.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include "md5.h"
+#include "my_strcat.h"
+
 
 FILE* fp;
 int new_money, new_bounty, i;
