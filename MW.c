@@ -63,29 +63,46 @@ int main()
 
 char *get_file()
 {
-	char temp[50];
-	char *temp_p = NULL;
+	char temp[50]; // Temp string for file reading
+	char *temp_p = NULL; // temp pointer for pointer store and then free it after new allocation of orignal pointer
 	char *mw_path = (char *) calloc(1, 1); // Empty string
-	char **dirs = NULL;
-	size_t dirs_len;
-	char *Uname = NULL;
+	char **dirs = NULL; // array of stirngs
+	size_t dirs_len; // length of array
+	char *Uname = NULL; // username
 
-	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
+	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r"); // open file
 	if (cmd) {
 		while(fgets(temp, sizeof(temp), cmd)) {
-			temp_p = mw_path;
-			mw_path = my_strcat(mw_path, temp);
-			free(temp_p);
+			temp_p = mw_path; // store mw_path in temp pointer to free it later
+			mw_path = my_strcat(mw_path, temp); // concatenate temp to mw_path
+			free(temp_p); // free temp pointer
 			if (!mw_path) {
 				error("\n Mmw_path allocation failed");
 			}
 		}
-		pclose(cmd);
+		pclose(cmd); // close file
 		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output. World is going to destroy because now mw_path has 1 extra unused byte allocated
-		dirs = listdir(mw_path, &dirs_len);
-		Uname = get_Uname(dirs, dirs_len);
+		dirs = listdir(mw_path, &dirs_len); // get array of dirs
 		if (dirs) {
-			// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
+			Uname = get_Uname(dirs, dirs_len); // get username
+			if (Uname) {
+				// concatenate Uname
+				temp_p = mw_path;
+				mw_path = my_strcat(mw_path, Uname);
+				free(temp_p);
+				
+				// concatenate backslash
+				temp_p = mw_path;
+				mw_path = my_strcat(mw_path, "\\");
+				free(temp_p);
+				
+				// concatenate Uname again
+				temp_p = mw_path;
+				mw_path = my_strcat(mw_path, Uname);
+				free(temp_p);
+				
+				fp = fopen(mw_path, "rb+"); // Open Most Wanted Save file in (read + write) byte mode
+			}
 		}
 	}
 	return Uname;
