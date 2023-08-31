@@ -10,11 +10,12 @@ FILE* fp;
 int new_money, new_bounty, i;
 int p_money = 16441, p_bounty = 58109, p_name = 23089; // Positions of specific variable in file
 
-int get_file();
+char *get_file();
 void get_modified();
 void update_data();
 void updata_hash();
-int listdir(const char *PATH);
+char **listdir(const char *PATH);
+void error(char *msg);
 
 
 int main()
@@ -25,9 +26,9 @@ int main()
 	// printf(" +------------------+\n");
 
 
-	char Uname[30];
-	if (get_file(Uname)) {
-		exit(0);
+	char *Uname = get_file();
+	if (Uname) {
+		error("JUST TERMINATE PROGRAM");
 		if(fp)
 		{
 			fseek(fp, p_name, SEEK_SET);
@@ -48,7 +49,7 @@ int main()
 		}
 		else {
 			system("color 0c");
-			perror("\n ERROR");
+			error("\n ERROR");
 		}
 		printf("\n DONE .... ");
 		getchar();
@@ -59,26 +60,30 @@ int main()
 }
 
 
-int get_file(char *Uname)
+char *get_file()
 {
-	char temp[4];
-	char *mw_path = (char *) calloc(1, 1);
+	char temp[50];
+	char *temp_p = NULL;
+	char *mw_path = (char *) calloc(1, 1); // Empty string
+	char *Uname;
 
 	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
 	if (cmd) {
 		while(fgets(temp, sizeof(temp), cmd)) {
-			mw_path = strcat(mw_path, temp);
+			temp_p = mw_path;
+			mw_path = my_strcat(mw_path, temp);
+			free(temp_p);
+			if (!mw_path) {
+				error("\n Mmw_path allocation failed");
+			}
 		}
 		pclose(cmd);
-		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output
-		puts(mw_path);
+		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output. World is going to destroy because now mw_path has 1 extra unused byte allocated
 		if (listdir(mw_path)) {
 			// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
-			return 1;
 		}
-		return 0;
 	}
-	return 0;
+	return Uname;
 }
 
 
@@ -132,8 +137,12 @@ void updata_hash()
 }
 
 
-int listdir(const char *PATH)
+char **listdir(const char *PATH)
 {
+	char **dirs = NULL;
+	size_t dirs_len = 0; // Length of 
+	char *dir = NULL; // Empty string
+
 	short dir_num = 0;
 	struct dirent *entry;
 	DIR *dp;
@@ -142,11 +151,22 @@ int listdir(const char *PATH)
 	if (dp)
 	{
 		while(entry = readdir(dp)) {
-			if (dir_num++ > 1)
-				puts(entry->d_name);
+			if (dir_num++ > 1) { // Skip "." and ".." Directory
+				dir = my_strcat("", entry->d_name);
+				if (dir) {
+					puts(dir);
+					dirs_len++;
+				}
+			}
 		}
 		closedir(dp);
-		return 1;
 	}
-	return 0;
+	return dirs;
+}
+
+
+void error(char *msg)
+{
+	perror(msg);
+	exit(-1);
 }
