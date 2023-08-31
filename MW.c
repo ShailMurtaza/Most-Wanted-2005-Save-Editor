@@ -14,7 +14,7 @@ char *get_file();
 void get_modified();
 void update_data();
 void updata_hash();
-char **listdir(const char *PATH);
+char **listdir(const char *PATH, size_t *dirs_len);
 void error(char *msg);
 
 
@@ -65,6 +65,8 @@ char *get_file()
 	char temp[50];
 	char *temp_p = NULL;
 	char *mw_path = (char *) calloc(1, 1); // Empty string
+	char **dirs = NULL;
+	size_t dirs_len;
 	char *Uname;
 
 	FILE *cmd = popen("echo %userprofile%\\Documents\\NFS Most Wanted\\", "r");
@@ -79,7 +81,8 @@ char *get_file()
 		}
 		pclose(cmd);
 		mw_path[strlen(mw_path)-1] = '\0'; // Remove \n from echo output. World is going to destroy because now mw_path has 1 extra unused byte allocated
-		if (listdir(mw_path)) {
+		dirs = listdir(mw_path, &dirs_len);
+		if (dirs) {
 			// fp = fopen(new_path, "rb+"); // Opening file in (read + write) mode
 		}
 	}
@@ -112,6 +115,7 @@ void update_data()
 	putw(new_bounty, fp);
 }
 
+
 #define buff_size 63528
 void updata_hash()
 {
@@ -137,10 +141,10 @@ void updata_hash()
 }
 
 
-char **listdir(const char *PATH)
+char **listdir(const char *PATH, size_t *dirs_len)
 {
+	(*dirs_len) = 0;
 	char **dirs = NULL;
-	size_t dirs_len = 0; // Length of 
 	char *dir = NULL; // Empty string
 
 	short dir_num = 0;
@@ -154,8 +158,13 @@ char **listdir(const char *PATH)
 			if (dir_num++ > 1) { // Skip "." and ".." Directory
 				dir = my_strcat("", entry->d_name);
 				if (dir) {
-					puts(dir);
-					dirs_len++;
+					if (dirs) {
+						dirs = (char **) realloc(dirs, ++(*dirs_len));
+					}
+					else {
+						dirs = (char **) malloc(++(*dirs_len) * sizeof(char*));
+					}
+					dirs[(*dirs_len)-1] = dir;
 				}
 			}
 		}
