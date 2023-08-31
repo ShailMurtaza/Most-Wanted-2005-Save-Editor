@@ -21,15 +21,14 @@ void error(char *msg);
 
 int main()
 {
-	// system("color 0a");
-	// printf(" +------------------+\n");
-	// printf(" | CREATED BY SHAIL |\n");
-	// printf(" +------------------+\n");
+	system("color 0a");
+	printf(" +------------------+\n");
+	printf(" | CREATED BY SHAIL |\n");
+	printf(" +------------------+\n");
 
 
 	char *Uname = get_file();
 	if (Uname) {
-		error("JUST TERMINATE PROGRAM");
 		if(fp)
 		{
 			fseek(fp, p_name, SEEK_SET);
@@ -218,3 +217,4 @@ void error(char *msg)
 	perror(msg);
 	exit(-1);
 }
+
